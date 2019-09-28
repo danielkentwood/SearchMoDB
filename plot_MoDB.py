@@ -33,8 +33,8 @@ def open_table(table_name):
     cache_dir = os.getcwd() + '/JSON/' + table_name + '_db'
     count_dir = os.getcwd() + '/JSON/' + table_name + '_db_count'
 
-    f = open(cache_dir, 'r+b') # 'r+b' means that you're opening it as readable, writable, and binary
-    db = pickle.load(f)
+    f = open(cache_dir, 'r+b') 
+    db = pickle.load(f, encoding='latin1')
     # Make the text column lowercase
     db['Text'] = db['Text'].str.lower()
     
@@ -44,7 +44,7 @@ def open_table(table_name):
     if path.isfile(count_dir):
         # if it count cache file already exists, load it
         f = open(count_dir, 'r+b') # 'r+b' means that you're opening it as readable, writable, and binary
-        year_count = pickle.load(f)
+        year_count = pickle.load(f, encoding='latin1')
         # update current year
         tokens = db[db['Year']==cur_year]['Text'].apply(tokenize_with_stop)
         cur_count = sum(tokens.apply(len))
@@ -86,7 +86,7 @@ def count_string_by_year(year, string, db):
 def get_probs_for_years(years,string):
     count_dir = os.getcwd() + '/JSON/GC_db_count'
     f = open(count_dir, 'r+b') # 'r+b' means that you're opening it as readable, writable, and binary
-    year_count = pickle.load(f)
+    year_count = pickle.load(f, encoding='latin1')
     counts = list(year_count[year_count['Year'].isin(years)].Count)
     
     # see if we have a search cache yet
@@ -94,7 +94,7 @@ def get_probs_for_years(years,string):
     if path.isfile(search_dir):
         # if yes, then open it
         f = open(search_dir, 'r+b') # 'r+b' means that you're opening it as readable, writable, and binary
-        df = pickle.load(f)
+        df = pickle.load(f, encoding='latin1')
         # see if your search term is there
         searched = df[df.string==string]
         # if it's there, grab the hits
