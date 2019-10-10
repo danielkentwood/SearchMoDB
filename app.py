@@ -3,9 +3,10 @@ import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
-import plotly_express
-import plot_MoDB as pmdb
-import pandas as pd
+import numpy as np
+# import plot_MoDB as pmdb
+import modb
+
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -13,84 +14,130 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
+gc = modb.database('GC')
+
 app.layout = html.Div([
-    dcc.Markdown('''
-        ### Search the General Conference Archives
-        ***
-        The [Church of Jesus Christ of Latter-Day Saints](https://www.churchofjesuschrist.org/?lang=eng) 
-        (formerly known as Mormons)
-        has a biannnual conference known as General Conference. It is the primary 
-        vehicle through which the leadership of the LDS Church provides encouragement, 
-        moral guidance and correction, and doctrinal exposition. 
+    html.Div([
+        dcc.Markdown('''
+            ### Search the General Conference Archives
+            ***
+            The [Church of Jesus Christ of Latter-Day Saints](https://www.churchofjesuschrist.org/?lang=eng) 
+            (formerly known as Mormons)
+            has a biannnual conference known as General Conference. It is the primary 
+            vehicle through which the leadership of the LDS Church provides encouragement, 
+            moral guidance and correction, and doctrinal exposition. 
 
-        I made this little app to help me investigate trends in how the church leadership speaks
-        to the members, and how those trends have changed (or remained the same) over time.
+            I made this little app to help me investigate trends in how the church leadership speaks
+            to the members, and how those trends have changed (or remained the same) over time.
 
-        ** HOW TO USE THE APP: **
+            ** HOW TO USE THE APP: **
+            * To see the probability of given word/phrase over time, just add a search term in the search box and hit return.
+            You can keep adding search terms to see how they compare.
+            * You can also add/remove previously searched terms using the pulldown menu. 
+            * You can adjust how smooth the plot is with the smoothing slider. 
 
-        To use the app, just add a search term in the "ADD OPTION" box and then click the button.
-        Your search term will now appear in the pulldown menu below. Select your search term(s)
-        and watch as the chart updates. 
+            I hope you find this little project useful. 
+            ***
+            #### Select your search term(s)
+            '''),
+        dcc.Input(
+            id='input', 
+            value='faith',
+            placeholder='search term',
+            type='text',
+            n_submit=1),
+        dcc.Dropdown(
+            id='dropdown',
+            options=[],
+            value=[],
+            multi=True
+        )
+    ]),
+    html.Div([
+        dcc.Markdown('''
+            #### Set line smoothing
+            '''),
+        dcc.Slider(
+            id='slider',
+            min=0,
+            max=4,
+            step=1,
+            value=1,
+            marks={i: '{}'.format(i) for i in range(0,5)})
+        ], style={'marginTop':50, 'marginLeft':90, 'marginRight':300, 'marginBottom':25}),
+    html.Div([
+        dcc.Markdown('''
+            #### Hits vs frequencies 
+            You can select hits to see the raw number of hits for your search term(s). However, some years had more
+            words overall than others; it is sometimes more informative to see the probability (hits divided by total # of words)
+            of your search term(s).
 
-        I hope you find this little project useful. 
-        ***
-        '''),
-    dcc.Input(id='input', value=''),
-    html.Button('Add Option', id='submit'),
-    html.Div(id='confirm'),
-    dcc.Dropdown(
-        id='dropdown',
-        options=[
-            {'label': 'jesus', 'value': 'jesus'},
-            {'label': 'faith', 'value': 'faith'},
-            {'label': 'joseph', 'value': 'joseph'},
-        ],
-        value=['jesus','faith'],
-        multi=True
-    ),
-    dcc.Graph(id='output-graph', style={"width": "80%", "display": "inline-block"}),
+            Hint: If you choose hits, it makes sense to set the smoothing slider to 0.
+            '''),
+        dcc.RadioItems(
+            options=[
+                {'label': 'Hits', 'value': 'hits'},
+                {'label': 'Frequencies', 'value': 'frequencies'},
+                ],
+            value='frequencies',
+            id='radio')  
+        ],style={'marginTop':50, 'marginLeft':90,'marginRight':300}),
+    html.Div([
+    dcc.Graph(
+        id='output-graph', 
+        style={"width": "85%", "display": "inline-block","height":600})
+    ]),
 ], style={'marginTop':50, 'marginLeft':50, 'marginRight':50, 'marginBottom':50})
 
-# First callback for selecting the search terms
+
+
+
+
 @app.callback([
     Output('dropdown', 'options'),
-    Output('confirm', 'children')],
-    [Input('submit', 'n_clicks')],
-    [State(component_id='input', component_property='value'),
-     State(component_id='dropdown', component_property='options')]
+    Output('dropdown','value')],
+    [Input('input', 'n_submit')],
+    [State('input', 'value'),
+     State('dropdown', 'options'),
+     State('dropdown', 'value')]
 )
-def select_terms(n_clicks,new_value,current_options):
-    if not n_clicks:
-        raise PreventUpdate
+def select_terms(click,new_value,current_options,current_values):
+    for o in current_options:
+        if new_value in list(o.values()):
+            if new_value in current_values:
+                raise PreventUpdate
+            else:
+                current_values.append(new_value.lower())
+                return current_options, current_values
+
     current_options.append({'label': new_value.lower(), 'value': new_value.lower()})
-    confirmation='"' + new_value.lower() + '" added as a new search option.'
-    return current_options, confirmation
+    current_values.append(new_value.lower())
+    return current_options, current_values
+
 
 
 @app.callback(
     Output('output-graph','figure'),
-    [Input('dropdown','value')]
+    [Input('dropdown','value'),
+    Input('slider','value'),
+    Input('radio','value')]
 )
-def update_graph(input_strings):
-    if len(input_strings)==0:
-        return {}
-    years=range(1942,2020)
+def update_graph(input_strings,slider_val,radio_val):
+    fig = modb.figure()
+    fig.set_smoothing(slider_val)
     for i,s in enumerate(input_strings):
-        # get the string frequencies for the specified years
-        pbs = pmdb.get_probs_for_years(years,s)
-
-        # add to a single dataframe
-        if i==0:
-            p1 = pd.DataFrame(data={'Years':years,'Probability':pbs, 'string':list([s]*len(years))})
+        if radio_val=='frequencies':
+            # get the string frequencies for the specified years
+            y_data = gc.string_probability(s)
+            fig.set_axes('Probability')
         else:
-            p1 = p1.append(pd.DataFrame(data={'Years':years,'Probability':pbs, 'string':list([s]*len(years))}))
+            y_data = gc.string_hits(s)
+            fig.set_axes('Hits')
 
-    return plotly_express.line(p1,
-        x = 'Years',
-        y = 'Probability',
-        line_group = 'string',
-        color = 'string')
-
+        fig.add_trace(gc.years,y_data,s)
+        fig.fig.update_layout(showlegend=True)
+    
+    return fig.fig
 
 
 if __name__ == '__main__':
