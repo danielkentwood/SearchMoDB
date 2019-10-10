@@ -3,7 +3,6 @@ import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
-import numpy as np
 # import plot_MoDB as pmdb
 import modb
 
@@ -67,7 +66,7 @@ app.layout = html.Div([
         ], style={'marginTop':50, 'marginLeft':90, 'marginRight':300, 'marginBottom':25}),
     html.Div([
         dcc.Markdown('''
-            #### Hits vs frequencies 
+            #### Hits vs Probability
             You can select hits to see the raw number of hits for your search term(s). However, some years had more
             words overall than others; it is sometimes more informative to see the probability (hits divided by total # of words)
             of your search term(s).
@@ -76,16 +75,16 @@ app.layout = html.Div([
             '''),
         dcc.RadioItems(
             options=[
-                {'label': 'Hits', 'value': 'hits'},
-                {'label': 'Frequencies', 'value': 'frequencies'},
+                {'label': 'Hits', 'value': 'Hits'},
+                {'label': 'Probability', 'value': 'Probability'},
                 ],
-            value='frequencies',
+            value='Probability',
             id='radio')  
         ],style={'marginTop':50, 'marginLeft':90,'marginRight':300}),
     html.Div([
     dcc.Graph(
         id='output-graph', 
-        style={"width": "85%", "display": "inline-block","height":600})
+        style={"width": "80%", "display": "inline-block","height":600})
     ]),
 ], style={'marginTop':50, 'marginLeft':50, 'marginRight':50, 'marginBottom':50})
 
@@ -126,17 +125,16 @@ def update_graph(input_strings,slider_val,radio_val):
     fig = modb.figure()
     fig.set_smoothing(slider_val)
     for i,s in enumerate(input_strings):
-        if radio_val=='frequencies':
+        if radio_val=='Probability':
             # get the string frequencies for the specified years
             y_data = gc.string_probability(s)
-            fig.set_axes('Probability')
         else:
             y_data = gc.string_hits(s)
-            fig.set_axes('Hits')
 
         fig.add_trace(gc.years,y_data,s)
-        fig.fig.update_layout(showlegend=True)
-    
+
+    fig.set_axes(radio_val)
+    fig.fig.update_layout(showlegend=True)
     return fig.fig
 
 
