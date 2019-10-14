@@ -147,6 +147,7 @@ app.layout = html.Div(
         ),
     ],
     className="row twelve columns",
+    style={"backgroundColor":"#f8f2f2"},
 )
 
 @app.callback([
