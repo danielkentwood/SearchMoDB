@@ -1,20 +1,22 @@
-# SearchMoDB
+# Search MoDB
 
 ***
-The [Church of Jesus Christ of Latter-Day Saints](https://www.churchofjesuschrist.org/?lang=eng) 
-(formerly known as Mormons)
-has a biannnual conference known as General Conference. It is the primary 
-vehicle through which the leadership of the LDS Church provides encouragement, 
-moral guidance and correction, and doctrinal exposition. 
+### Why Mormonism? 
+This app lets you search for the frequency of words/phrases within a database of Mormon periodicals (hence, MoDB). I left the LDS church in 2016, and this app started as a way for me to explore the linguistic, doctrinal, and cultural evolution of the LDS church over time. 
 
-I made this little app to help me investigate trends in how the church leadership speaks
-to the members, and how those trends have changed (or remained the same) over time.
+### What I learned
+This project was also a springboard for me to build and deploy my first web app ever. I used Dash, and as a result, I learned way more HTML, CSS, and JavaScript than I anticipated, and I discovered that I really enjoy designing UIs. This particular UI was initially inspired by the image stitching app from the Dash sample app gallery: https://github.com/plotly/dash-sample-apps/tree/dash-stitching/apps/dash-stitching
 
-** HOW TO USE THE APP: **
+### Current iteration
+I will eventually make it possible to search from all of the major, official church publications. Currently, the database only contains the archives of General Conference from 1942 to the present day. For all the non-Mormons out there, General Conference is a biannual conference that is the primary vehicle through which the leadership of the church provides encouragement, moral guidance and correction, and doctrinal exposition. 
 
-To use the app, just add a search term in the "ADD OPTION" box and then click the button.
-Your search term will now appear in the pulldown menu below. Select your search term(s)
-and watch as the chart updates. 
+### Future iterations
+I hope to soon implement the following:
+* Transparent colored overlays on the graph, depicting the tenure of each prophet/president of the church. 
+* An option to see different results for messaging to men (i.e., priesthood session) and women (i.e., women's session) at General Conference. 
+* Integration with Google Ngram corpus; this will allow you to compare religious and secular trends for a particular word/phrase. 
+* Topic modeling, correlations and anti-correlations between words, sentiment analysis, and a few other natural language processing analyses. 
+
 
 I hope you find this little project useful. 
 ***
