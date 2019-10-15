@@ -49,10 +49,41 @@ def instructions():
 app.layout = html.Div(
     children=[
         html.Div(
-            [
+            [   
+
+                html.Div([
+                    html.A(
+                        html.Button(
+                            "View on GitHub",
+                            className="git_button",
+                        ),
+                        href='https://github.com/danielkentwood/SearchMoDB',
+                    ),
+                    html.Img(className="logo", src=app.get_asset_url("GitHub-Mark-Light-64px.png")),
+                ],
+                # style={"display":"inline-block"}
+                ),
+
+
+                    
+
+                # html.Div(
+                #     html.A(
+                #         html.Button(
+                #             "View on GitHub",
+                #         ),
+                #         href='https://github.com/danielkentwood/SearchMoDB',
+                #     ),
+                #     style={"margin-top":"15px","display":"inline-block"}
+                # ),
+                # html.Div(
+                #     html.Img(className="logo", src=app.get_asset_url("GitHub-Mark-Light-64px.png")),
+                # ),
+
+
                 html.H1(
                     children="Search MoDB",
-                    style={"margin-top":"120px"}
+                    style={"margin-top":"60px"}
                 ),
                 instructions(),
                 html.Div(
@@ -61,7 +92,7 @@ app.layout = html.Div(
                             "LEARN MORE",
                             className="button_instruction",
                             id="learn-more-button",
-                            ),
+                        ),
                     ],
                     className="mobile_buttons",   
                 ),

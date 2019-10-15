@@ -219,6 +219,14 @@ label {
   margin-right: 10px;
 }
 
+.logo {
+  height: 40px;
+  width: 40px;
+  padding-top: 12px;
+  float: right;
+  margin-right: 10px;
+}
+
 
 /* Blockquotes
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
@@ -314,6 +322,28 @@ input[type="button"] {
   border-radius: 2px;
   border: transparent !important;
   
+}
+
+.git_button {
+  margin-left: 5px;
+  margin-right: 12px;
+  margin-top: 12px;
+  height: 40px;
+  float: right;
+  color: white;
+  text-align: center;
+  font-size: 9px;
+  font-family: "Geneva", "Tahoma", "Verdana", "sans-serif";
+  font-weight: 200;
+  line-height: 38px;
+  letter-spacing: .1rem;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  background-color: #4181FF;
+  cursor: pointer;
+  box-sizing: border-box;
+  border:transparent !important;
 }
 
 
