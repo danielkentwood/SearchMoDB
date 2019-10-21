@@ -10,6 +10,9 @@ This project was also a springboard for me to build and deploy my first web app 
 ### Current iteration
 I will eventually make it possible to search from all of the major, official church publications. Currently, the database only contains the archives of General Conference from 1942 to the present day. For all the non-Mormons out there, General Conference is a biannual conference that is the primary vehicle through which the leadership of the church provides encouragement, moral guidance and correction, and doctrinal exposition. 
 
+![Example plot](./assets/example_plot.png)
+
+
 ### Future iterations
 I hope to soon implement the following:
 * Transparent colored overlays on the graph, depicting the tenure of each prophet/president of the church. 
