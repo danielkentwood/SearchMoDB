@@ -1,22 +1,16 @@
 import os
-from os import path
 import pickle
+
 import pandas as pd
-# NLP
-# import nltk
-# nltk.download('stopwords')
-# from nltk.corpus import stopwords
-# from nltk.tokenize import word_tokenize
-# set(stopwords.words('english'))
-# cachedStopWords = stopwords.words("english")
-# import numpy as np
 import plotly.graph_objects as go
 from scipy import ndimage
 
 
 
-
-class database:
+class Database:
+    """
+    Instantiates a database object by loading JSON files.
+    """
 
 	def __init__(self, name):
 		self.name = name
@@ -36,44 +30,6 @@ class database:
 			self.table = pickle.load(f, encoding='latin1')
 			self.table['Text'] = self.table['Text'].str.lower()
 
-	# def create_search_cache(self):
-	# 	return False
-        # hits=list()
-        # for y in years:
-        #     hits.append(count_string_by_year(y,string))
-        
-        # data = {'string':[string],'years':[years], 'hits':[hits]}
-        # df = pd.DataFrame(data)
-        # df.to_pickle(search_dir)  
-
-	# def open_search_cache(self):
-	# 	if path.isfile(self.past_search_dir):
-	# 		with open(self.past_search_dir, 'r+b') as f:
-	# 			self.search_cache = pickle.load(f, encoding='latin1')
-	# 			return True
-	# 	else:
-	# 		return False
-
-	# def update_search_cache(self):
-	# 	return False
-	    # hits=list()
-	    # for y in self.years:
-	    #     hits.append(count_string_by_year(y,string))
-	    
-	    # data = {'string':[string],'years':[years], 'hits':[hits]}
-	    # df2 = pd.DataFrame(data)
-	    # df = df.append(df2)    
-	    # df.to_pickle(search_dir)  
-
-	# def create_word_count_cache(self):
-	# 	tokens = self.table['Text'].apply(tokenize)
-	# 	tokens = tokens.apply(remove_stop_words)
-	# 	t_len = zip(self.table['Year'],tokens.apply(len))
-	# 	yc_df = pd.DataFrame(t_len,columns=['Year','Count'])
-	# 	word_count = pd.DataFrame(zip(self.years,[sum(yc_df[yc_df['Year']==y].Count) for y in self.years]),columns=['Year','Count'])
-	# 	word_count.to_pickle(self.word_count_dir)
-	# 	self.word_count = word_count
-
 	def open_word_count_cache(self):
 		if path.isfile(self.word_count_dir):
 			with open(self.word_count_dir, 'r+b') as f:
@@ -81,15 +37,6 @@ class database:
 				return True
 		else:
 			self.create_word_count_cache()
-
-	# def update_word_count_cache(self):
-	# 	tokens = self.table[self.table['Year']==cur_year]['Text'].apply(tokenize)
-	# 	tokens = tokens.apply(remove_stop_words)
-	# 	cur_count = sum(tokens.apply(len))
-	# 	# if it changed, save it
-	# 	if year_count.Count.iloc[-1]!=cur_count:
-	# 	    year_count.Count.iloc[-1]=cur_count
-	# 	    year_count.to_pickle(count_dir)  
 
 	def string_hits(self, string):
 		hits = [sum(self.table[self.table.Year==year].Text.str.count(string)) for year in self.years]
@@ -103,7 +50,10 @@ class database:
 
 
 
-class figure:
+class Figure:
+    """
+	Helper class to plot a histogram of search term hits over time.
+    """
 
 	def __init__(self):
 		self.fig = go.Figure()
@@ -113,18 +63,30 @@ class figure:
 	def clear_traces(self):
 		self.fig.data = list()
 
-	def add_trace(self,x,y,string):
-		if self.smoothing>0:
-			ydata = running_mean(y, self.smoothing)
-		else:
-			ydata = y
+	def add_trace(self, x, y, curve_label):
+        """
+        Plot the curve using x y data.
 
+        Arguments
+        ---------
+
+        x: The x axis data (datetime series).
+        y: The search term frequencies.
+        curve_label: The label to be associated with the curve on the plot.
+        """
+
+		# Smoothen curve by applying a rolling mean if smoothing is defined
+		ydata = running_mean(y, self.smoothing) if self.smoothing else y
+
+        # Plot the curve
 		self.fig.add_trace(
 			go.Scatter(
-				x = pd.Series(x),
-				y = ydata, 
-				mode = 'lines+markers',
-				name = string))
+				x=pd.Series(x),
+				y=ydata,
+				mode='lines+markers',
+				name=curve_label
+            )
+        )
 
 	def set_axes(self, y_text='Probability'):
 		self.fig.update_xaxes(
@@ -144,7 +106,7 @@ class figure:
 	def show(self):
 		self.fig.show()
 
-	def set_smoothing(self,x):
+	def set_smoothing(self, x):
 		self.smoothing = x
 
 

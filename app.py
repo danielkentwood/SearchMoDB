@@ -3,17 +3,14 @@ import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
+
 import modb
 
 
-
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
-
 gc = modb.database('GC')
-
 
 
 def demo_explanation():
@@ -25,9 +22,6 @@ def demo_explanation():
         html.Div([dcc.Markdown(demo_md, className="markdown")]),
         style={"margin": "10px","color":"white"},
     )
-
-
-
 
 
 def instructions():
@@ -63,24 +57,6 @@ app.layout = html.Div(
                 ],
                 # style={"display":"inline-block"}
                 ),
-
-
-                    
-
-                # html.Div(
-                #     html.A(
-                #         html.Button(
-                #             "View on GitHub",
-                #         ),
-                #         href='https://github.com/danielkentwood/SearchMoDB',
-                #     ),
-                #     style={"margin-top":"15px","display":"inline-block"}
-                # ),
-                # html.Div(
-                #     html.Img(className="logo", src=app.get_asset_url("GitHub-Mark-Light-64px.png")),
-                # ),
-
-
                 html.H1(
                     children="Search MoDB",
                     style={"margin-top":"60px"}
@@ -203,7 +179,6 @@ def select_terms(click,new_value,current_options,current_values):
     return current_options, current_values
 
 
-
 @app.callback(
     Output('output-graph','figure'),
     [Input('dropdown','value'),
@@ -250,7 +225,6 @@ def learn_more(n_clicks):
 
     n_clicks += 1
     return (html.Div(), "Learn More")
-
 
 
 if __name__ == '__main__':
