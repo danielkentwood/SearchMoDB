@@ -23,3 +23,7 @@ I hope to soon implement the following:
 
 I hope you find this little project useful. 
 ***
+## Contributors
+
+* Daniel Wood
+* [Nicolette Fendon](https://github.com/nicolette-verone)
